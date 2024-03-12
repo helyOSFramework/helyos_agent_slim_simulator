@@ -23,12 +23,12 @@ docker push helyosframework/helyos_agent_slim_simulator:0.7.1
 ### Trajectory
 
 ```python
-assignment = { "trajectory": [{"x": float, "y": float, "orientations":List[float], time:float}, ...] }
+assignment = { "operation": "driving", "trajectory": [{"x": float, "y": float, "orientations":List[float], time:float}, ...] }
 
 ```
 ### Destination point
 ``` python
-assignment = { "destination": {"x": float, "y": float, "orientations":List[float]}  }
+assignment = { "operation": "driving", "destination": {"x": float, "y": float, "orientations":List[float]}  }
 ```
 
 ### AutoTruck-TruckTrix path format
