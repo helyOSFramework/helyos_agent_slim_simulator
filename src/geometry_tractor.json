@@ -1,0 +1,57 @@
+[
+    {
+        "id": 1,
+        "tool_type": "tractor",
+        "reference_position": "first_axis",
+        "axles": [
+            {
+                "id": 0,
+                "position": {
+                    "x": 1360,
+                    "y": 0
+                },
+                "steering": {
+                    "axle_type": "forced",
+                    "max_steer_angle": 768,
+                    "steering_reference": "remote"
+                },
+                "tire_width": 315,
+                "tire_diameter": 1044,
+                "wheel_positions": [
+                    1075,
+                    -1075
+                ]
+            },
+            {
+                "id": 1,
+                "position": {
+                    "x": 5160,
+                    "y": 0
+                },
+                "steering": {
+                    "axle_type": "fixed",
+                    "max_steer_angle": 0
+                },
+                "tire_width": 315,
+                "tire_diameter": 1044,
+                "wheel_positions": [
+                    1075,
+                    -1075
+                ]
+            }
+        ],
+        "width": 2550,
+        "height": 3600,
+        "length": 6150,
+        "chassis_position": {
+            "x": 0,
+            "y": 0
+        },
+        "ground_clearance": 300,
+        "rear_joint_position": {
+            "x": 4500,
+            "y": 0
+        },
+        "max_front_joint_angle": 0
+    }
+]

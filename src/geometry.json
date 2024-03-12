@@ -1,0 +1,59 @@
+[
+    {
+        "id": 1024,
+        "tool_type": "truck",
+        "reference_position": "first_axis",
+        "axles": [
+            {
+                "id": 0,
+                "position": {
+                    "x": 1120,
+                    "y": 0
+                },
+                "steering": {
+                    "axle_type": "forced",
+                    "max_steer_angle": 663,
+                    "steering_reference": "remote"
+                },
+                "tire_width": 300,
+                "tire_diameter": 1044,
+                "wheel_positions": [
+                    1160,
+                    -1160
+                ]
+            },
+            {
+                "tool_type": "trailer",
+                "id": 1,
+                "position": {
+                    "x": 6535,
+                    "y": 0
+                },
+                "steering": {
+                    "axle_type": "fixed"
+                },
+                "tire_width": 300,
+                "tire_diameter": 1044,
+                "wheel_positions": [
+                    1160,
+                    1130,
+                    -1130,
+                    -1160
+                ]
+            }
+        ],
+        "width": 2600,
+        "height": 3950,
+        "length": 9935,
+        "chassis_position": {
+            "x": 0,
+            "y": 0
+        },
+        "ground_clearance": 300,
+        "rear_joint_position": {
+            "x": 9935,
+            "y": 0
+        },
+        "max_front_joint_angle": 0
+    }
+]
