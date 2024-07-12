@@ -101,6 +101,36 @@ initial_sensor =  {    'helyos_agent_control':{
                                         'value': 'up',
                                         'unit': ""}
                         },
+                            
+                        "agent": {
+                                    "SoC": {
+                                        "title": "HV Battery SoC",
+                                        "type": "number",
+                                        "description": "Battery state of charge of HV System",
+                                        "unit": "%",
+                                        "minimum": 0,
+                                        "maximum": 100,
+                                        "value": 100
+                                    },
+                                    "Voltage": {
+                                        "title": "HV Battery Voltage",
+                                        "type": "number",
+                                        "description": "Battery voltage of HV System",
+                                        "unit": "V",
+                                        "minimum": 0,
+                                        "maximum": 800,
+                                        "value": 723
+                                    },
+                                    "Velocity": {
+                                        "title": "Velocity of the vehicle",
+                                        "type": "number",
+                                        "description": "Speed of the vehicle",
+                                        "unit": "km/h",
+                                        "minimum": -15,
+                                        "maximum": 80,
+                                        "value": 0
+                                    }
+                        }
                         
             }   
 
