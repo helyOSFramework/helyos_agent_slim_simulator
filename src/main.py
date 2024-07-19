@@ -12,10 +12,10 @@ from helyos_agent_sdk.utils import replicate_helyos_client
 
 
 # CONSTANTS
-RABBITMQ_HOST = os.environ.get('RABBITMQ_HOST', "local_message_broker")
-RABBITMQ_HOST = os.environ.get('RBMQ_HOST', "local_message_broker")
-RABBITMQ_PORT = int(os.environ.get('RABBITMQ_PORT', "5672"))
-RABBITMQ_PORT = int(os.environ.get('RBMQ_PORT', "5672"))
+ALT_RABBITMQ_HOST = os.environ.get('RABBITMQ_HOST', "local_message_broker")
+RABBITMQ_HOST = os.environ.get('RBMQ_HOST', ALT_RABBITMQ_HOST)
+ALT_RABBITMQ_PORT = int(os.environ.get('RABBITMQ_PORT', "5672"))
+RABBITMQ_PORT = int(os.environ.get('RBMQ_PORT', ALT_RABBITMQ_PORT))
 ENABLE_SSL = os.environ.get('ENABLE_SSL', "False") == "True"
 PROTOCOL = os.environ.get('PROTOCOL', "AMQP")
 CACERTIFICATE_FILENAME = os.environ.get('CACERTIFICATE_FILENAME', "ca_certificate.pem")
