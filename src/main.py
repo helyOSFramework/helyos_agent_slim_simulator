@@ -3,8 +3,10 @@ from threading import Thread
 from data_publishing import periodic_publish_state_and_sensors
 from helyos_agent_sdk import HelyOSClient, HelyOSMQTTClient, AgentConnector, DatabaseConnector
 from helyos_agent_sdk.models import AssignmentCurrentStatus, AGENT_STATE, AgentCurrentResources, ASSIGNMENT_STATUS
+from initialization import agent_initialization
 from utils.MockROSCommunication import MockROSCommunication
-from instant_actions import cancel_assignm_callback, my_other_callback, release_callback, reserve_callback
+from helyos_instant_actions import cancel_assignm_callback, release_callback, reserve_callback
+from custom_instant_actions import my_custom_callback
 from operation_simulator import assignment_execution_local_simulator
 import uuid
 from helyos_agent_sdk.crypto import verify_signature
@@ -56,18 +58,10 @@ try:
 except:
     CA_CERTIFICATE = ""
 
-MessageBrokerClient = HelyOSClient
-
-if PROTOCOL == "AMQP":   
-    MessageBrokerClient = HelyOSClient
-if PROTOCOL == "MQTT":
-    MessageBrokerClient = HelyOSMQTTClient
 
 # 1 - AGENT INITIALIZATION
-
 initial_orientations = [0] * VEHICLE_PARTS
 initial_orientations[0] = ORIENTATION_0
-
 agent_data = {          
                 'name': VEHICLE_NAME,
                 'tool_type': TOOL_TYPE,
@@ -78,104 +72,29 @@ agent_data = {
                 'data_format': ASSIGNMENT_FORMAT,
          }
 
-
-initial_sensor =  {    'helyos_agent_control':{
-                                        'current_task_progress':{
-                                            'title':"Progress of drive operation",
-                                            'type': "number",
-                                             'value':0,
-                                             'unit':"",
-                                             'maximum': 1},
-                        },
-                        'temperatures':{
-                                        'sensor_t1': {
-                                            'title':"cabine",
-                                            'type' :"number",
-                                            'value': 30,
-                                            'unit': "oC"}
-                        },                
-                        'actuators':{
-                                    'sensor_act1': {
-                                        'title':"Tail Lift",
-                                        'type' :"string",
-                                        'value': 'up',
-                                        'unit': ""}
-                        },
-                            
-                        "agent": {
-                                    "SoC": {
-                                        "title": "HV Battery SoC",
-                                        "type": "number",
-                                        "description": "Battery state of charge of HV System",
-                                        "unit": "%",
-                                        "minimum": 0,
-                                        "maximum": 100,
-                                        "value": 100
-                                    },
-                                    "Voltage": {
-                                        "title": "HV Battery Voltage",
-                                        "type": "number",
-                                        "description": "Battery voltage of HV System",
-                                        "unit": "V",
-                                        "minimum": 0,
-                                        "maximum": 800,
-                                        "value": 723
-                                    },
-                                    "Velocity": {
-                                        "title": "Velocity of the vehicle",
-                                        "type": "number",
-                                        "description": "Speed of the vehicle",
-                                        "unit": "km/h",
-                                        "minimum": -15,
-                                        "maximum": 80,
-                                        "value": 0
-                                    }
-                        }
-                        
-            }   
-
-initial_status = AGENT_STATE.FREE
-operations = AGENT_OPERATIONS.split(',')
-resources = AgentCurrentResources(operation_types_available=operations, work_process_id=None, reserved=False)
-assignment = AssignmentCurrentStatus(id=None, status=None, result={})
-
-## 1.1 Instantiate main helyOS client - we create one RabbitMQ connection per helyos_client
-helyOS_client = MessageBrokerClient(RABBITMQ_HOST, RABBITMQ_PORT, uuid=UUID, enable_ssl=ENABLE_SSL, ca_certificate=CA_CERTIFICATE)
-attempts = 0; helyos_excep = None
-while attempts < CHECKIN_MAX_ATTEMPTS:
-    try:
-        if RBMQ_USERNAME and RBMQ_PASSWORD:
-            helyOS_client.connect(RBMQ_USERNAME, RBMQ_PASSWORD)
-
-        print(f"Check in, attempt {attempts+1} ...")
-        helyOS_client.perform_checkin(yard_uid=YARD_UID, agent_data=agent_data, status=initial_status.value)
-        break
-    except Exception as e:
-        attempts += 1
-        helyos_excep = e
-        time.sleep(2)
-if attempts == CHECKIN_MAX_ATTEMPTS:
-    raise helyos_excep
-
-helyOS_client.get_checkin_result()
-print("\n connected to message broker")
-
-## 1.2 Instantiate main Agent Connector  
-agentConnector = AgentConnector(helyOS_client)
-agentConnector.publish_state(initial_status, resources, assignment_status=assignment)
+helyOS_client, agentConnector, initial_data = agent_initialization(PROTOCOL,
+                                                                    RABBITMQ_HOST, 
+                                                                    RABBITMQ_PORT, 
+                                                                    RBMQ_USERNAME,
+                                                                    RBMQ_PASSWORD,
+                                                                    UUID, YARD_UID,
+                                                                    ENABLE_SSL,
+                                                                    CA_CERTIFICATE,
+                                                                    AGENT_OPERATIONS,
+                                                                    CHECKIN_MAX_ATTEMPTS,
+                                                                    agent_data)
 
 
-
-## 1.3 Internal communication -  thread-safe messaging mechanisms
+## 1.2 Internal communication -  thread-safe messaging mechanisms
 driving_operation_ros =  MockROSCommunication("driving_operation_ros")       
 position_sensor_ros = MockROSCommunication("position_sensor_ros")  
 vehi_state_ros = MockROSCommunication("vehi_state_ros")  
 current_assignment_ros = MockROSCommunication("current_assignment_ros")  
 
-vehi_state_ros.publish({'agent_state': initial_status, 'CONNECTED_TRAILER': None})
+vehi_state_ros.publish({'agent_state': initial_data['status'], 'CONNECTED_TRAILER': None})
 driving_operation_ros.publish({'CANCEL_DRIVING':False, 'destination':None, 'path_array':None})
 current_assignment_ros.publish({'id':None, 'status': None})
-position_sensor_ros.publish({ 'x':X0, 'y':Y0, 'orientations':initial_orientations, 'sensors':initial_sensor})
+position_sensor_ros.publish({ 'x':X0, 'y':Y0, 'orientations':initial_orientations, 'sensors':initial_data['sensors']})
 
 
 
@@ -229,7 +148,7 @@ else:
 def my_reserve_callback(*args):        return reserve_callback(vehi_state_ros, agentConnector, *args)
 def my_release_callback(*args):        return release_callback(vehi_state_ros, agentConnector, *args )
 def my_cancel_assignm_callback(*args): return cancel_assignm_callback(driving_operation_ros, current_assignment_ros, agentConnector, *args )
-def my_any_other_instant_action_callback(*args): return my_other_callback(position_sensor_ros,driving_operation_ros,vehi_state_ros, agentConnector,
+def my_any_other_instant_action_callback(*args): return my_custom_callback(position_sensor_ros,driving_operation_ros,vehi_state_ros, agentConnector,
                                                                           datareq_rpc, *args)
 
 agentConnector.consume_instant_action_messages(my_reserve_callback, my_release_callback, my_cancel_assignm_callback, my_any_other_instant_action_callback)

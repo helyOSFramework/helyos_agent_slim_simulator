@@ -2,7 +2,7 @@
 
 import time, math, random, os
 from helyos_agent_sdk.models import AGENT_STATE, ASSIGNMENT_STATUS
-from connect_trailer import trailer_connection
+from connect_trailer import tool_connection
 from utils.path_followers import stanley_path_follower, straight_path_to_destination
 from utils.data_format_convertors import convert_autotruck_path_to_trajectory, get_destination_from_assignment
 
@@ -68,7 +68,7 @@ def assignment_execution_local_simulator(inst_assignment_msg, ASSIGNMENT_FORMAT,
         if operation == 'driving':
             operation_finished = drive_ivi_stepped(driving_operation_ros, position_sensor_ros, trajectory)
         elif "connect_trailer" in operation:
-            operation_finished = trailer_connection(operation, vehi_state_ros, position_sensor_ros, helyOS_client2, datareq_rpc)
+            operation_finished = tool_connection(operation, vehi_state_ros, position_sensor_ros, helyOS_client2, datareq_rpc)
 
         if operation_finished:
             

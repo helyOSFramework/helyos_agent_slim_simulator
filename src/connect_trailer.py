@@ -4,11 +4,11 @@ from helyos_agent_sdk import AgentConnector
 
 
 
-def trailer_connection(command_body,vehi_state_ros, position_sensor_ros, helyOS_client2, datareq_rpc):
+def tool_connection(command_body,vehi_state_ros, position_sensor_ros, helyOS_client2, datareq_rpc):
     states_ros = vehi_state_ros.read()
     agentConnector = AgentConnector(helyOS_client2)
 
-    if "disconnect_trailer" in command_body:
+    if "disconnect_trailer" in command_body or "disconnect_tool" in command_body:
         # Disconnect with the trailer 
         states_ros['CONNECTED_TRAILER']['status']=AGENT_STATE.FREE.value           
         vehi_state_ros.publish({**states_ros})
@@ -26,9 +26,12 @@ def trailer_connection(command_body,vehi_state_ros, position_sensor_ros, helyOS_
             }   
 
 
-    elif "connect_trailer" in command_body:  
+    elif "connect_trailer" in command_body or "connect_tool" in command_body:
         try:
-            trailer_uuid = command_body.split("connect_trailer")[1]
+            if "connect_tool" in command_body:
+                trailer_uuid = command_body.split("connect_tool")[1]
+            else:
+                trailer_uuid = command_body.split("connect_trailer")[1]
             trailer_uuid = trailer_uuid.strip()
             leader_uuid = agentConnector.helyos_client.uuid   
 
@@ -42,7 +45,7 @@ def trailer_connection(command_body,vehi_state_ros, position_sensor_ros, helyOS_
                         time.sleep(1)
                         follower_agents = datareq_rpc.call({'query':"allFollowers", 'conditions':{"uuid":leader_uuid}})
                         for trailer in follower_agents: found_trailer = found_trailer or trailer['uuid'] == trailer_uuid
-                        print("trailer data", follower_agents)
+                        print("followers data", follower_agents)
                         i = i + 1
 
                 if not found_trailer:
