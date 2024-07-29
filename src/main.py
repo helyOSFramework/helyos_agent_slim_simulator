@@ -4,6 +4,7 @@ from data_publishing import periodic_publish_state_and_sensors
 from helyos_agent_sdk import HelyOSClient, HelyOSMQTTClient, AgentConnector, DatabaseConnector
 from helyos_agent_sdk.models import AssignmentCurrentStatus, AGENT_STATE, AgentCurrentResources, ASSIGNMENT_STATUS
 from initialization import agent_initialization
+from shared_data import  shared_data
 from utils.MockROSCommunication import MockROSCommunication
 from helyos_instant_actions import cancel_assignm_callback, release_callback, reserve_callback
 from custom_instant_actions import my_custom_callback
@@ -21,7 +22,6 @@ RABBITMQ_PORT = int(os.environ.get('RBMQ_PORT', ALT_RABBITMQ_PORT))
 ENABLE_SSL = os.environ.get('ENABLE_SSL', "False") == "True"
 PROTOCOL = os.environ.get('PROTOCOL', "AMQP")
 CACERTIFICATE_FILENAME = os.environ.get('CACERTIFICATE_FILENAME', "ca_certificate.pem")
-
 
 VEHICLE_NAME = os.environ.get('NAME', '')
 TOOL_TYPE = os.environ.get('TOOL_TYPE', "truck")
@@ -63,40 +63,51 @@ except:
 initial_orientations = [0] * VEHICLE_PARTS
 initial_orientations[0] = ORIENTATION_0
 agent_data = {          
-                'name': VEHICLE_NAME,
-                'tool_type': TOOL_TYPE,
-                'agentClass': 'vehicle',
-                'pose': {'x': X0, 'y':Y0, 'orientations':initial_orientations},
-                'geometry': GEOMETRY,
-                'factsheet': GEOMETRY,
-                'data_format': ASSIGNMENT_FORMAT,
-         }
+    'name': VEHICLE_NAME,
+    'tool_type': TOOL_TYPE,
+    'agentClass': 'vehicle',
+    'pose': {'x': X0, 'y':Y0, 'orientations':initial_orientations},
+    'geometry': GEOMETRY,
+    'factsheet': GEOMETRY,
+    'data_format': ASSIGNMENT_FORMAT,
+}
 
-helyOS_client, agentConnector, initial_data = agent_initialization(PROTOCOL,
-                                                                    RABBITMQ_HOST, 
-                                                                    RABBITMQ_PORT, 
-                                                                    RBMQ_USERNAME,
-                                                                    RBMQ_PASSWORD,
-                                                                    UUID, YARD_UID,
-                                                                    ENABLE_SSL,
-                                                                    CA_CERTIFICATE,
-                                                                    AGENT_OPERATIONS,
-                                                                    CHECKIN_MAX_ATTEMPTS,
-                                                                    agent_data)
+rabbitmq_config = {
+    'protocol': PROTOCOL,
+    'host': RABBITMQ_HOST,
+    'port': RABBITMQ_PORT,
+    'username': RBMQ_USERNAME,
+    'password': RBMQ_PASSWORD,
+    'enable_ssl': ENABLE_SSL,
+    'ca_certificate': CA_CERTIFICATE
+}
+
+initial_status = AGENT_STATE.FREE
 
 
-## 1.2 Internal communication -  thread-safe messaging mechanisms
+## Internal communication -  thread-safe messaging mechanisms
 driving_operation_ros =  MockROSCommunication("driving_operation_ros")       
 position_sensor_ros = MockROSCommunication("position_sensor_ros")  
 vehi_state_ros = MockROSCommunication("vehi_state_ros")  
-current_assignment_ros = MockROSCommunication("current_assignment_ros")  
+current_assignment_ros = MockROSCommunication("current_assignment_ros")
 
-vehi_state_ros.publish({'agent_state': initial_data['status'], 'CONNECTED_TRAILER': None})
 driving_operation_ros.publish({'CANCEL_DRIVING':False, 'destination':None, 'path_array':None})
 current_assignment_ros.publish({'id':None, 'status': None})
-position_sensor_ros.publish({ 'x':X0, 'y':Y0, 'orientations':initial_orientations, 'sensors':initial_data['sensors']})
+
+helyOS_client, agentConnector = agent_initialization(   rabbitmq_config,
+                                                        agent_data,
+                                                        UUID, YARD_UID,
+                                                        AGENT_OPERATIONS,
+                                                        CHECKIN_MAX_ATTEMPTS,
+                                                        )
 
 
+shared_data( agentConnector, 
+            agent_data, initial_status,
+            driving_operation_ros,
+            position_sensor_ros,
+            vehi_state_ros,
+            current_assignment_ros)
 
 # 2 - AGENT PUBLISHES MESSAGES
 # Use a separate thread to publish position, state and sensors periodically

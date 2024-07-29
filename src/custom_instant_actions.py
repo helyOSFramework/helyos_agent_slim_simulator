@@ -1,7 +1,6 @@
 
 
 import json
-from helyos_agent_sdk.models import AssignmentCurrentStatus, AGENT_STATE, AgentCurrentResources, ASSIGNMENT_STATUS
 from connect_trailer import tool_connection
 
 
