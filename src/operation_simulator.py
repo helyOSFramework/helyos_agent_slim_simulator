@@ -2,7 +2,7 @@
 
 import time, math, random, os
 from helyos_agent_sdk.models import AGENT_STATE, ASSIGNMENT_STATUS
-from connect_trailer import tool_connection
+from connect_tool import tool_connection
 from utils.path_followers import stanley_path_follower, straight_path_to_destination
 from utils.data_format_convertors import convert_autotruck_path_to_trajectory, get_destination_from_assignment
 

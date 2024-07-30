@@ -8,7 +8,7 @@ def tool_connection(command_body,vehi_state_ros, position_sensor_ros, helyOS_cli
     states_ros = vehi_state_ros.read()
     agentConnector = AgentConnector(helyOS_client2)
 
-    if "disconnect_trailer" in command_body or "disconnect_tool" in command_body:
+    if "disconnect_trailer" in command_body or "disconnect tool" in command_body:
         # Disconnect with the trailer 
         states_ros['CONNECTED_TRAILER']['status']=AGENT_STATE.FREE.value           
         vehi_state_ros.publish({**states_ros})
@@ -26,10 +26,10 @@ def tool_connection(command_body,vehi_state_ros, position_sensor_ros, helyOS_cli
             }   
 
 
-    elif "connect_trailer" in command_body or "connect_tool" in command_body:
+    elif "connect_trailer" in command_body or "connect tool" in command_body:
         try:
-            if "connect_tool" in command_body:
-                trailer_uuid = command_body.split("connect_tool")[1]
+            if "connect tool" in command_body:
+                trailer_uuid = command_body.split("connect tool")[1]
             else:
                 trailer_uuid = command_body.split("connect_trailer")[1]
             trailer_uuid = trailer_uuid.strip()

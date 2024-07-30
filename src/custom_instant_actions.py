@@ -1,7 +1,7 @@
 
 
 import json
-from connect_trailer import tool_connection
+from connect_tool import tool_connection
 
 
 def my_custom_callback(position_sensor_ros, driving_operation_ros, vehi_state_ros, agentConnector, datareq_rpc, ch, sender, received_str):
@@ -20,21 +20,21 @@ def my_custom_callback(position_sensor_ros, driving_operation_ros, vehi_state_ro
     sensor_patch = {}
 
     try:
-        if "connect_trailer" in command['body']:
+        if "connect_trailer" in command['body'] or  "connect tool" in command['body']:
             return tool_connection(command['body'], vehi_state_ros,position_sensor_ros, agentConnector.helyos_client, datareq_rpc)
 
-        if "pause" == command['body']:     
+        if "pause operation" == command['body']:     
             driving_operation_ros.publish({**operation_commands, 'PAUSE_ASSIGNMENT': True})
             sensor_patch = {  'instant_actions_response':{
-                                'task_control':{
-                                        'title':"Task status",
-                                        'type': "string",
-                                        'value':"paused",
-                                        'unit':""},
-                            }
+                                    'task_control':{
+                                            'title':"Task status",
+                                            'type': "string",
+                                            'value':"paused",
+                                            'unit':""},
+                                    }
                     }    
 
-        if "resume" == command['body']:                                                
+        if "resume operation" == command['body']:                                                
             driving_operation_ros.publish({**operation_commands, 'PAUSE_ASSIGNMENT': False})
             sensor_patch = {  'instant_actions_response':{
                                         'task_control':{
@@ -42,10 +42,15 @@ def my_custom_callback(position_sensor_ros, driving_operation_ros, vehi_state_ro
                                                 'type': "string",
                                                 'value':"normal",
                                                 'unit':""},
-                                    }
-                            }     
+                                        }
+                            }   
 
-        
+        if "pause_publish_sensors"  == command['body']: 
+            vehi_state_ros.publish({**vehi_state_ros.read(), 'pause_publish_sensors':True })
+
+        if "resume_publish_sensors"  == command['body']: 
+            vehi_state_ros.publish({**vehi_state_ros.read(), 'pause_publish_sensors':False })         
+
         if "tail lift" in command['body']:     
             if command['body'] == "tail lift down": value = "down"
             if command['body'] == "tail lift up":  value = "up"

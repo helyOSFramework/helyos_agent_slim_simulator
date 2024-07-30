@@ -87,35 +87,38 @@ def periodic_publish_state_and_sensors(helyOS_client2, current_assignment_ros, v
 
     while True:
         time.sleep(period)
+
+        if not vehi_state_ros.read().get('pause_publish_sensors', False):
         
-        # SENSORS AND  POSITIONS - VISUALIZATION CHANNEL - HIGH FREQUENCY
+            # SENSORS AND  POSITIONS - VISUALIZATION CHANNEL - HIGH FREQUENCY
 
-        # Publish truck position
-        try:
             agent_data = get_vehicle_position(position_sensor_ros)
-            agentConnector2.publish_sensors(x=agent_data["x"], y=agent_data["y"], z=0,
-                                            orientations=agent_data['orientations'], sensors=agent_data['sensors'], signed=False)
-        except Exception as e:
-            print("cannot read position.", e)
 
-        # Publish trailer position
-        try:
-            trailer = vehi_state_ros.read().get('CONNECTED_TRAILER', None)
-        except:
-            trailer = None
-
-        if trailer is not None:
+            # Publish truck position
             try:
-                truck_geometry = GEOMETRY[0]
-                trailer_data = get_trailer_position(position_sensor_ros, truck_geometry)
-                body = trailer_data
-                message= json.dumps({'type': 'agent_sensors','body': body})
-                helyOS_client2.publish(routing_key=f"agent.{trailer['uuid']}.visualization", message=message)
-
-                
+                agentConnector2.publish_sensors(x=agent_data["x"], y=agent_data["y"], z=0,
+                                                orientations=agent_data['orientations'], sensors=agent_data['sensors'], signed=False)
             except Exception as e:
-                print("cannot read trailer position.", e)
+                print("cannot read position.", e)
 
+            # Publish trailer position
+            try:
+                trailer = vehi_state_ros.read().get('CONNECTED_TRAILER', None)
+            except:
+                trailer = None
+
+            if trailer is not None:
+                try:
+                    truck_geometry = GEOMETRY[0]
+                    trailer_data = get_trailer_position(position_sensor_ros, truck_geometry)
+                    body = trailer_data
+                    message= json.dumps({'type': 'agent_sensors','body': body})
+                    helyOS_client2.publish(routing_key=f"agent.{trailer['uuid']}.visualization", message=message)
+
+                    
+                except Exception as e:
+                    print("cannot read trailer position.", e)
+        
 
         # ASSIGNMENT AND AGENT STATE - STATE AND UPDATE CHANNEL - LOW FREQUENCY  
         try:
