@@ -24,7 +24,7 @@ PROTOCOL = os.environ.get('PROTOCOL', "AMQP")
 CACERTIFICATE_FILENAME = os.environ.get('CACERTIFICATE_FILENAME', "ca_certificate.pem")
 
 VEHICLE_NAME = os.environ.get('NAME', '')
-TOOL_TYPE = os.environ.get('TOOL_TYPE', "truck")
+AGENT_TYPE = os.environ.get('AGENT_TYPE', "truck")
 
 ASSIGNMENT_FORMAT = os.environ.get('ASSIGNMENT_FORMAT', "trajectory")
 PATH_TRACKER = os.environ.get('PATH_TRACKER', "ideal")
@@ -64,7 +64,7 @@ initial_orientations = [0] * VEHICLE_PARTS
 initial_orientations[0] = ORIENTATION_0
 agent_data = {          
     'name': VEHICLE_NAME,
-    'tool_type': TOOL_TYPE,
+    'agent_type': AGENT_TYPE,
     'agentClass': 'vehicle',
     'pose': {'x': X0, 'y':Y0, 'orientations':initial_orientations},
     'geometry': GEOMETRY,
