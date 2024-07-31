@@ -67,7 +67,7 @@ def assignment_execution_local_simulator(inst_assignment_msg, ASSIGNMENT_FORMAT,
 
         if operation == 'driving':
             operation_finished = drive_ivi_stepped(driving_operation_ros, position_sensor_ros, trajectory)
-        elif "connect_trailer" in operation:
+        elif "connect_trailer" in operation or "connect tool" in operation:
             operation_finished = tool_connection(operation, vehi_state_ros, position_sensor_ros, helyOS_client2, datareq_rpc)
 
         if operation_finished:
