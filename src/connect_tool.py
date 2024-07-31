@@ -7,6 +7,7 @@ from helyos_agent_sdk import AgentConnector
 def tool_connection(command_body,vehi_state_ros, position_sensor_ros, helyOS_client2, datareq_rpc):
     states_ros = vehi_state_ros.read()
     agentConnector = AgentConnector(helyOS_client2)
+    result = True
 
     if "disconnect_trailer" in command_body or "disconnect tool" in command_body:
         # Disconnect with the trailer 
@@ -74,9 +75,10 @@ def tool_connection(command_body,vehi_state_ros, position_sensor_ros, helyOS_cli
                                         'unit':""},
                                 }
                     }
+                result = False
                 
     agent_data = position_sensor_ros.read()
     sensors = {**agent_data['sensors'], **sensor_patch}
     agent_data['sensors'] = sensors
     position_sensor_ros.publish(agent_data)  
-    return True 
+    return result 
