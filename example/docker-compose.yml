@@ -14,7 +14,7 @@ services:
         build: ../
 
         volumes:
-            - ./custom-geometry.json:/app/geometry.json        # To modify reported geometry.
+            - ./custom-geometry.json:/app/customization/geometry.json        # To modify reported geometry.
             - ./ca_certificate.pem:/app/ca_certificate.pem # To verify rbmq server url.
         environment:
 

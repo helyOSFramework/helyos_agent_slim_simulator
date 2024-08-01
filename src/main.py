@@ -4,10 +4,10 @@ from data_publishing import periodic_publish_state_and_sensors
 from helyos_agent_sdk import HelyOSClient, HelyOSMQTTClient, AgentConnector, DatabaseConnector
 from helyos_agent_sdk.models import AssignmentCurrentStatus, AGENT_STATE, AgentCurrentResources, ASSIGNMENT_STATUS
 from initialization import agent_initialization
-from shared_data import  shared_data
+from customization.shared_data import  shared_data
 from utils.MockROSCommunication import MockROSCommunication
 from helyos_instant_actions import cancel_assignm_callback, release_callback, reserve_callback
-from custom_instant_actions import my_custom_callback
+from customization.custom_instant_actions import my_custom_callback
 from operation_simulator import assignment_execution_local_simulator
 import uuid
 from helyos_agent_sdk.crypto import verify_signature
@@ -34,7 +34,7 @@ X0 = float(os.environ.get('X0', 0))
 Y0 = float(os.environ.get('Y0', 0))
 ORIENTATION_0 = float(os.environ.get('ORIENTATION', 0))
 GEOMETRY_FORMAT = os.environ.get('GEOMETRY_FORMAT', "trucktrix-vehicle")
-GEOMETRY_FILENAME = os.environ.get('GEOMETRY_FILENAME', "geometry.json")
+GEOMETRY_FILENAME = os.environ.get('GEOMETRY_FILENAME', "./customization/geometry.json")
 
 AGENT_OPERATIONS =  os.environ.get('AGENT_OPERATIONS', "drive,")
 VEHICLE_PARTS =  int(os.environ.get('VEHICLE_PARTS', 1))

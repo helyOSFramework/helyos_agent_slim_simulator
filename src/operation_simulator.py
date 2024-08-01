@@ -1,11 +1,11 @@
 
 
-import time, math, random, os
+import time, math, os
 from helyos_agent_sdk.models import AGENT_STATE, ASSIGNMENT_STATUS
 from connect_tool import tool_connection
 from utils.path_followers import stanley_path_follower, straight_path_to_destination
 from utils.data_format_convertors import convert_autotruck_path_to_trajectory, get_destination_from_assignment
-
+from customization.agent_sensors import get_agent_sensors
 
 # Thread-safe messaging mechanism using MockROSCommunication
 # driving_operation_ros, position_sensor_ros, vehi_state_ros, current_assignment_ros
@@ -66,7 +66,10 @@ def assignment_execution_local_simulator(inst_assignment_msg, ASSIGNMENT_FORMAT,
         print(" <= assignment is executing")
 
         if operation == 'driving':
-            operation_finished = drive_ivi_stepped(driving_operation_ros, position_sensor_ros, trajectory)
+            if  vehi_state_ros.read().get('pause_publish_sensors', False):
+                print("Driving operation active; vehicle sensor publishing will resume...")
+                vehi_state_ros.publish({**vehi_state_ros.read(),'pause_publish_sensors': False})
+            operation_finished = drive_ivi_stepped(driving_operation_ros, position_sensor_ros,  trajectory)
         elif "connect_trailer" in operation or "connect tool" in operation:
             operation_finished = tool_connection(operation, vehi_state_ros, position_sensor_ros, helyOS_client2, datareq_rpc)
 
@@ -130,46 +133,10 @@ def drive_ivi_stepped(driving_operation_ros, position_sensor_ros, trajectory):
                                              'value': d+1,
                                              'unit':'',
                                              'maximum': num_steps},
-                        },
-                        'temperatures':{
-                                        'sensor_t1': {
-                                            'title':"cabine",
-                                            'type' :"number",
-                                            'value':random.randint(20,40),
-                                            'unit': "oC"}
-                                         },
-
-                        "agent": {
-                            "SoC": {
-                                "title": "HV Battery SoC",
-                                "type": "number",
-                                "description": "Battery state of charge of HV System",
-                                "unit": "%",
-                                "minimum": 0,
-                                "maximum": 100,
-                                "value": random.randint(20,60)
-                            },
-                            "Voltage": {
-                                "title": "HV Battery Voltage",
-                                "type": "number",
-                                "description": "Battery voltage of HV System",
-                                "unit": "V",
-                                "minimum": 0,
-                                "maximum": 800,
-                                "value": 723
-                            },
-                            "Velocity": {
-                                "title": "Velocity of the vehicle",
-                                "type": "number",
-                                "description": "Speed of the vehicle",
-                                "unit": "km/h",
-                                "minimum": -15,
-                                "maximum": 80,
-                                "value": random.randint(20,80)
-                            }
                         }
-                      }   
-            
+            }
+
+            sensor_patch = {**sensor_patch, **get_agent_sensors(position_sensor_ros) }
             agent_data = position_sensor_ros.read()    
             sensors = {**agent_data['sensors'], **sensor_patch}   
             new_agent_data = {"x":x, "y":y, "z":0, "orientations":orientations, "sensors": sensors }

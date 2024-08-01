@@ -1,8 +1,10 @@
 
 
-import json
+import json, os, sys
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from connect_tool import tool_connection
 
+AGENTS_DL_EXCHANGE = os.environ.get('AGENTS_UL_EXCHANGE', 'xchange_helyos.agents.dl')
 
 def my_custom_callback(position_sensor_ros, driving_operation_ros, vehi_state_ros, agentConnector, datareq_rpc, ch, sender, received_str):
     print("not helyos-related instant action", received_str)
@@ -80,6 +82,8 @@ def my_custom_callback(position_sensor_ros, driving_operation_ros, vehi_state_ro
             
         sensors = {**agent_data['sensors'], **sensor_patch}
         agent_data['sensors'] = sensors
-        position_sensor_ros.publish(agent_data)    
+        position_sensor_ros.publish(agent_data)   
+
+
     except Exception as e:
         print(e)
