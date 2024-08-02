@@ -47,6 +47,19 @@ we have implemented additional instant actions triggered by the following string
 * "tail lift up" or "tail lift down": change the value of the tail lift sensor.
 * "headlight on" or "headlight off": change the value of the tail lift sensor.
 
+## Customizations
+
+The `/src/customizations` folder contains scripts and configurations that allow for further customization of the simulator:
+
+| File                          | Description                                        |
+| ----------------------------- | -------------------------------------------------- |
+| `agent_sensors.py`            | Defines the sensor data for the simulated agent.   |
+| `connected_tool_sensors.py`   | Manages sensor data for tools connected to the agent. |
+| `custom_instant_actions.py`   | Implements additional instant actions for the simulator. |
+| `shared_data.pys`             | Contains geometric configurations for the simulation. |
+| `geometry.json`               | Customize the sensors initial data and access communication channels. |
+
+
 ## Settings
 
 The simulator is configured by the environment variables:
