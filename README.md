@@ -49,7 +49,7 @@ we have implemented additional instant actions triggered by the following string
 
 ## Customizations
 
-The `/src/customizations` folder contains scripts and configurations that allow for further customization of the simulator:
+The `/src/customization` folder contains scripts and configurations that allow for further customization of the simulator:
 
 | File                          | Description                                        |
 | ----------------------------- | -------------------------------------------------- |
