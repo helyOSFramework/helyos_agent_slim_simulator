@@ -5,7 +5,7 @@ def get_tool_position(position_sensor_ros, agent_geometry):
     truck_sensors = {**position_sensor_ros.read()}
     try:
         trailer_joint_angle = truck_sensors['orientations'][1]
-    except:
+    except (IndexError, KeyError):
         trailer_joint_angle = 0
         
     absolut_truck_angle = truck_sensors['orientations'][0]
