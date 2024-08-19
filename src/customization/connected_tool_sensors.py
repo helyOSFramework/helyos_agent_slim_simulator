@@ -13,7 +13,6 @@ def get_tool_position(position_sensor_ros, agent_geometry):
 
     truck_first_axle_position = agent_geometry['axles'][0]['position']
     truck_rear_position = agent_geometry['rear_joint_position']
-    trailer_front_joint_position = {'x':0, 'y':0} # by definition.
   
     # We use the position of the first axle as the global x, y reference for the truck, 
     # and truck-trailer joint point as global x, y reference for the trailer.
@@ -24,8 +23,6 @@ def get_tool_position(position_sensor_ros, agent_geometry):
     truck_rear_joint_distance_to_truck_global_reference = math.sqrt(vector_from_reference_to_rear_position['x']**2 +
                                                              vector_from_reference_to_rear_position['y']**2 )
     
-
-    trailer_global_reference = trailer_front_joint_position
     trailer_front_joint_distance_to_trailer_global_reference = 0 # by definition
 
 
