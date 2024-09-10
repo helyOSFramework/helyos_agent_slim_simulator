@@ -59,7 +59,7 @@ def tool_connection(command_body,vehi_state_ros, position_sensor_ros, helyOS_cli
                             'trailer_control':{
                                     'title':"Trailer",
                                     'type': "string",
-                                    'value':"attached",
+                                    'value':trailer_uuid,
                                     'unit':""},
                             }
                 }   
