@@ -3,4 +3,4 @@ dataclasses
 dataclasses_json
 numpy
 filelock
-helyos_agent_sdk==0.7.7
+helyos_agent_sdk==0.8.0

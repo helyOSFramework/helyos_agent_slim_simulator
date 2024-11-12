@@ -41,6 +41,7 @@ VEHICLE_PARTS =  int(os.environ.get('VEHICLE_PARTS', 1))
 CHECKIN_MAX_ATTEMPTS = int(os.environ.get('CHECKIN_MAX_ATTEMPTS', "5"))
 RBMQ_USERNAME = os.environ.get('RBMQ_USERNAME', None)
 RBMQ_PASSWORD = os.environ.get('RBMQ_PASSWORD', None)
+RBMQ_VHOST = os.environ.get('RBMQ_VHOST', '/')
 UPDATE_RATE = os.environ.get('UPDATE_RATE', 2)
 
 if UUID == "RANDOM_UUID":
@@ -79,7 +80,8 @@ rabbitmq_config = {
     'username': RBMQ_USERNAME,
     'password': RBMQ_PASSWORD,
     'enable_ssl': ENABLE_SSL,
-    'ca_certificate': CA_CERTIFICATE
+    'ca_certificate': CA_CERTIFICATE,
+    'vhost':RBMQ_VHOST
 }
 
 initial_status = AGENT_STATE.FREE
@@ -98,7 +100,7 @@ helyOS_client, agentConnector = agent_initialization(   rabbitmq_config,
                                                         agent_data,
                                                         UUID, YARD_UID,
                                                         AGENT_OPERATIONS,
-                                                        CHECKIN_MAX_ATTEMPTS,
+                                                        CHECKIN_MAX_ATTEMPTS
                                                         )
 
 

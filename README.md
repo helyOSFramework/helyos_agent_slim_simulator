@@ -82,9 +82,10 @@ The simulator is configured by the environment variables:
 | VELOCITY | Driving velocity 0 to 10. (arb. unit) |
 | --- | --- |
 | RABBITMQ_HOST | HelyOS RabbitMQ Server  |
+| RBMQ_VHOST | Virtual host of RabbitMQ   |
 | RABBITMQ_PORT | HelyOS RabbitMQ Port (e.g.,5671, 5672, 1883, 8883, default:5672)  |
-| RBMQ_USERNAME | Agent RabbitMQ account name (optional) |
-| RBMQ_PASSWORD | Agent RabbitMQ account password (optional)  |
+| RBMQ_USERNAME | Agent RabbitMQ account name |
+| RBMQ_PASSWORD | Agent RabbitMQ account password  |
 | PROTOCOL | "AMQP" or "MQTT" (default: AMPQ)  |
 | ENABLE_SSL | True or False (default: False)  |
 

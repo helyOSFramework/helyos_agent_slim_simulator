@@ -26,7 +26,8 @@ def agent_initialization (  rabbitmq_config,
     helyOS_client = MessageBrokerClient(rabbitmq_config['host'], 
                                         rabbitmq_config['port'], 
                                         uuid=UUID, enable_ssl= rabbitmq_config['enable_ssl'],
-                                        ca_certificate=rabbitmq_config['ca_certificate'])
+                                        ca_certificate=rabbitmq_config['ca_certificate'],
+                                        vhost=rabbitmq_config['vhost'])
     attempts = 0; helyos_excep = None
     while attempts < CHECKIN_MAX_ATTEMPTS:
         try:
@@ -48,11 +49,11 @@ def agent_initialization (  rabbitmq_config,
     
 
     ## 1.2 Instantiate main Agent Connector  
-    agentConnector = AgentConnector(helyOS_client)
+    agent_connector = AgentConnector(helyOS_client)
     operations = AGENT_OPERATIONS.split(',')
     resources = AgentCurrentResources(operation_types_available=operations, work_process_id=None, reserved=False)
     assignment = AssignmentCurrentStatus(id=None, status=None, result={})
-    agentConnector.publish_state(initial_status, resources, assignment_status=assignment)
+    agent_connector.publish_state(initial_status, resources, assignment_status=assignment)
 
 
-    return helyOS_client, agentConnector
+    return helyOS_client, agent_connector
