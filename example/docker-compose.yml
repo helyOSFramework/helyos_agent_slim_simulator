@@ -33,6 +33,7 @@ services:
 
             # RABBITMQ 
             - RBMQ_HOST=local_message_broker # local_message_broker | rabbitmq.server.com 
+            - RBMQ_VHOST=/
 
             # FOR MQTT AGENT
             # - RBMQ_PORT=8883
