@@ -9,10 +9,13 @@ Run with the default settings:
 docker run helyosframework/agent_helyos_slim_simulator
 ```
 
-Or use a docker-compose as shown in `/example/docker-compose.yml`.
+Or use the docker-compose shown in `/run/docker-compose.yml` or build your own.
 
+For development purposes you could run slim simulator in native python by installing the requirements.txt file. 
+Therefore it's necessaary to check the enivornment varibales in `/run/.env`. Tested in python 3.8 with helyos_sdk=0.8.0.
+Both deployment options - running in docker or natively - are reading the environment from `/run/.env`!
 
-## Build
+## Building a docker image
 
 ```
 docker build --no-cache -t helyosframework/helyos_agent_slim_simulator:test .
@@ -60,7 +63,7 @@ The `/src/customizations` folder contains scripts and configurations that allow 
 | `geometry.json`               | Customize the sensors initial data and access communication channels. |
 
 
-## Settings
+## Configuration and available settings in `/run/.env`
 
 The simulator is configured by the environment variables:
 
