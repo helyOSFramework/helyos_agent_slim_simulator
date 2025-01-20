@@ -4,3 +4,4 @@ dataclasses_json
 numpy
 filelock
 helyos_agent_sdk==0.8.0
+python-dotenv

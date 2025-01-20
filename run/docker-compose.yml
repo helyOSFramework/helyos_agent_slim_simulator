@@ -1,0 +1,62 @@
+version: '3.5'
+services:
+
+
+# # ============================================================================
+# # ============================================================================
+    # #                         HELYOS AGENT 
+# # ============================================================================
+# # ============================================================================
+
+
+    agent_simulator:
+        # image: helyosframework/helyos_agent_slim_simulator:0.6.0
+        build: ../
+
+        volumes:
+            - ./custom-geometry.json:/app/customization/geometry.json       # To modify reported geometry.
+            - ./ca_certificate.pem:/app/ca_certificate.pem                  # To verify rbmq server url.
+        environment:
+            # view .env file for variable list, defaults and comments
+
+            - UUID=${UUID}                              #
+            - PATH_TRACKER=${PATH_TRACKER}              #
+            - ASSIGNMENT_FORMAT=${ASSIGNMENT_FORMAT}    #
+            - NAME=${NAME}                              #
+            - X0=${X0}
+            - Y0=${Y0}
+            - ORIENTATION=${ORIENTATION}                #
+            - VELOCITY=${VELOCITY}                      #
+            - VEHICLE_PARTS=${VEHICLE_PARTS}            #
+            - YARD_UID=${YARD_UID}                      #
+            - UPDATE_RATE=${UPDATE_RATE}                #
+            - CACERTIFICATE_FILENAME='ca_certificate.pem' # in docker the certificate is on the mounted volume
+
+            # RABBITMQ 
+            - RBMQ_HOST=${RBMQ_HOST}                    #
+            - RBMQ_VHOST=${RBMQ_VHOST}                  #
+
+            # FOR AMQP AGENT (DEFAULT) or MQTT AGENT (Non Default)
+            - RBMQ_PORT=${RBMQ_PORT}                    #
+            - ENABLE_SSL=${ENABLE_SSL} # True | False (defaults to False)
+            - PROTOCOL=${PROTOCOL} # AMQP | MQTT (defaults to AMQP) Remember to change the port for MQTT
+
+            # RBMQ ACCOUNT
+            # - RBMQ_USERNAME=${RBMQ_USERNAME}
+            # - RBMQ_PASSWORD=${RBMQ_PASSWORD}
+            # OR
+            - REGISTRATION_TOKEN=${REGISTRATION_TOKEN}
+
+# check RBMQ_HOST in .env to match the network confiuration
+# execution of docker on host machine
+        network_mode: "host"                        # RBMQ_HOST=localhost
+
+# execution of docker as part of an existing backend network:
+        #networks:
+        #    - my-docker-net                         # change to your own network name, RBMQ_HOST=local_message_broker
+
+#networks:
+#    my-docker-net:
+#        name: my-docker-net
+#        external: true
+

@@ -1,4 +1,14 @@
 import os, json, time
+from dotenv import load_dotenv
+from pathlib import Path
+
+if 'UUID' and 'NAME' in os.environ:  # check if key exists which means that environment is already loaded by docker
+    pass
+else:  # otherwise load environment for native python execution
+    dotenv = Path('../run/.env')
+    load_dotenv(dotenv)
+    print(".env loaded." + os.environ.get('REGISTRATION_TOKEN'))
+
 from threading import Thread
 from data_publishing import periodic_publish_state_and_sensors
 from helyos_agent_sdk import HelyOSClient, HelyOSMQTTClient, AgentConnector, DatabaseConnector
@@ -14,14 +24,16 @@ from helyos_agent_sdk.crypto import verify_signature
 from helyos_agent_sdk.utils import replicate_helyos_client
 
 
-# CONSTANTS
+
+# environment and config defaults
 ALT_RABBITMQ_HOST = os.environ.get('RABBITMQ_HOST', "local_message_broker")
 RABBITMQ_HOST = os.environ.get('RBMQ_HOST', ALT_RABBITMQ_HOST)
 ALT_RABBITMQ_PORT = int(os.environ.get('RABBITMQ_PORT', "5672"))
 RABBITMQ_PORT = int(os.environ.get('RBMQ_PORT', ALT_RABBITMQ_PORT))
 ENABLE_SSL = os.environ.get('ENABLE_SSL', "False") == "True"
 PROTOCOL = os.environ.get('PROTOCOL', "AMQP")
-CACERTIFICATE_FILENAME = os.environ.get('CACERTIFICATE_FILENAME', "ca_certificate.pem")
+# certificates location depends from run/deployment: docker-compose mounts a volume otherwise path to run folder is used
+CACERTIFICATE_FILENAME = os.environ.get('CACERTIFICATE_FILENAME', "../run/ca_certificate.pem")
 
 VEHICLE_NAME = os.environ.get('NAME', '')
 AGENT_TYPE = os.environ.get('AGENT_TYPE', "truck")
@@ -96,6 +108,7 @@ current_assignment_ros = MockROSCommunication("current_assignment_ros")
 driving_operation_ros.publish({'CANCEL_DRIVING':False, 'destination':None, 'path_array':None})
 current_assignment_ros.publish({'id':None, 'status': None})
 
+# init agent including checkin
 helyOS_client, agentConnector = agent_initialization(   rabbitmq_config,
                                                         agent_data,
                                                         UUID, YARD_UID,
