@@ -3,17 +3,27 @@
 It simulates an agent in the helyOS framework. It can be used for front-end development or for testing path planning algorithms.
 
 ## Getting started
-
-Run with the default settings:
+Check the `/example` folder including the `/example/docker-compose.yml` and `/example/.env` files. 
+If the defaults match to your setup you could run the docker container with the default settings:
 ```
 docker run helyosframework/agent_helyos_slim_simulator
 ```
 
-Or use the docker-compose shown in `/run/docker-compose.yml` or build your own.
+Or use the docker-compose from `/example/docker-compose.yml` with
+```
+docker compose -f docker-compose.yml up
+```
+or build your own. The provided docker-compose file is automatically loading environmental variables from `/example/.env`.
+After changing your source or environment files you have to rebuild the docker container before restarting with docker compose:
+```
+docker compose -f docker-compose.yml build
+```
 
 For development purposes you could run slim simulator in native python by installing the requirements.txt file. 
-Therefore it's necessaary to check the enivornment varibales in `/run/.env`. Tested in python 3.8 with helyos_sdk=0.8.0.
-Both deployment options - running in docker or natively - are reading the environment from `/run/.env`!
+Therefore it's necessary to have the environment variables in a `.env` file in `./src/`. You could copy and edit the file from `/example/.env`.
+The main.py uses the lib dotenv which is ensuring that existing environment variables don't get overwritten. 
+Thereby you can develop in native python and deploy by docker with two different .env setups.
+
 
 ## Building a docker image
 
@@ -63,8 +73,9 @@ The `/src/customizations` folder contains scripts and configurations that allow 
 | `geometry.json`               | Customize the sensors initial data and access communication channels. |
 
 
-## Configuration and available settings in `/run/.env`
+## Configuration and available settings
 
+refer to `/example/.env`.
 The simulator is configured by the environment variables:
 
 | VARIABLE | DESCRIPTION |
@@ -109,7 +120,10 @@ Ref:
     - [Stanley: The robot that won the DARPA grand challenge](http://isl.ecst.csuchico.edu/DOCS/darpa2005/DARPA%202005%20Stanley.pdf)
     - [Autonomous Automobile Path Tracking](https://www.ri.cmu.edu/pub_files/2009/2/Automatic_Steering_Methods_for_Autonomous_Automobile_Path_Tracking.pdf)
 
+## ToDo
 
+* setup docker compose to mirror development code from repo from ../src to /app/src
+* setup logging for execution in native python
 
 ### License
 

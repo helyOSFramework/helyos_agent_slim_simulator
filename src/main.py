@@ -1,13 +1,12 @@
 import os, json, time
 from dotenv import load_dotenv
-from pathlib import Path
 
-if 'UUID' and 'NAME' in os.environ:  # check if key exists which means that environment is already loaded by docker
-    pass
-else:  # otherwise load environment for native python execution
-    dotenv = Path('../run/.env')
-    load_dotenv(dotenv)
-    print(".env loaded." + os.environ.get('REGISTRATION_TOKEN'))
+# check if .env in /src/ exists and load this .env
+# load_dotenv will not overwrite environment variables that may already exist (e.g. from docker environment)
+dotenv_path = '.env'
+if load_dotenv(dotenv_path):
+    print("loaded environment from .env file.")
+
 
 from threading import Thread
 from data_publishing import periodic_publish_state_and_sensors
@@ -25,6 +24,7 @@ from helyos_agent_sdk.utils import replicate_helyos_client
 
 
 
+
 # environment and config defaults
 ALT_RABBITMQ_HOST = os.environ.get('RABBITMQ_HOST', "local_message_broker")
 RABBITMQ_HOST = os.environ.get('RBMQ_HOST', ALT_RABBITMQ_HOST)
@@ -32,10 +32,9 @@ ALT_RABBITMQ_PORT = int(os.environ.get('RABBITMQ_PORT', "5672"))
 RABBITMQ_PORT = int(os.environ.get('RBMQ_PORT', ALT_RABBITMQ_PORT))
 ENABLE_SSL = os.environ.get('ENABLE_SSL', "False") == "True"
 PROTOCOL = os.environ.get('PROTOCOL', "AMQP")
-# certificates location depends from run/deployment: docker-compose mounts a volume otherwise path to run folder is used
-CACERTIFICATE_FILENAME = os.environ.get('CACERTIFICATE_FILENAME', "../run/ca_certificate.pem")
+CACERTIFICATE_FILENAME = os.environ.get('CACERTIFICATE_FILENAME', "ca_certificate.pem")
 
-VEHICLE_NAME = os.environ.get('NAME', '')
+VEHICLE_NAME = os.environ.get('NAME', 'SlimSimVehicle')
 AGENT_TYPE = os.environ.get('AGENT_TYPE', "truck")
 
 ASSIGNMENT_FORMAT = os.environ.get('ASSIGNMENT_FORMAT', "trajectory")
@@ -70,6 +69,7 @@ try:
         CA_CERTIFICATE = f.read()
 except:
     CA_CERTIFICATE = ""
+
 
 
 # 1 - AGENT INITIALIZATION

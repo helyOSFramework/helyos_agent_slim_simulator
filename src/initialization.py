@@ -30,19 +30,24 @@ def agent_initialization (  rabbitmq_config,
                                         vhost=rabbitmq_config['vhost'])
     attempts = 0; helyos_excep = None
     while attempts < CHECKIN_MAX_ATTEMPTS:
+        print(f" Check in, attempt {attempts + 1} ...")
         try:
             if rabbitmq_config['username'] and rabbitmq_config['password']:
                 helyOS_client.connect(rabbitmq_config['username'], rabbitmq_config['password'])
 
-            print(f"Check in, attempt {attempts+1} ...")
             helyOS_client.perform_checkin(yard_uid=YARD_UID, agent_data=agent_data, status=initial_status.value)
+
             break
         except Exception as e:
-            attempts += 1
-            helyos_excep = e
-            time.sleep(2)
+            print(e)
+
+        attempts += 1
+        time.sleep(2)
+
     if attempts == CHECKIN_MAX_ATTEMPTS:
-        raise helyos_excep
+        print("Check in exceeded maximum attempts, no connection to server.")
+        exit(1)
+
 
     helyOS_client.get_checkin_result()
     print("\n connected to message broker")       
