@@ -120,11 +120,6 @@ Ref:
     - [Stanley: The robot that won the DARPA grand challenge](http://isl.ecst.csuchico.edu/DOCS/darpa2005/DARPA%202005%20Stanley.pdf)
     - [Autonomous Automobile Path Tracking](https://www.ri.cmu.edu/pub_files/2009/2/Automatic_Steering_Methods_for_Autonomous_Automobile_Path_Tracking.pdf)
 
-## ToDo
-
-* setup docker compose to mirror development code from repo from ../src to /app/src
-* setup logging for execution in native python
-
 ### License
 
 This project is licensed under the MIT License.
