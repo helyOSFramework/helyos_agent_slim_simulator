@@ -141,7 +141,7 @@ Ref:
     - [Stanley: The robot that won the DARPA grand challenge](http://isl.ecst.csuchico.edu/DOCS/darpa2005/DARPA%202005%20Stanley.pdf)
     - [Autonomous Automobile Path Tracking](https://www.ri.cmu.edu/pub_files/2009/2/Automatic_Steering_Methods_for_Autonomous_Automobile_Path_Tracking.pdf)
 
-### Connection to helyOS
+### Connection to RabbitMQ Server
 
 The `RBMQ_HOST` is the server adress of the RabbitMQ Server used by the helyOS control tower. The default value local_message_broker is intended for the scenario where the RabbitMQ server runs in a docker service called local_message_broker. In this setup, the agent simulator is intended to run in a docker service within the same network as the local_message_broker service (see the network settings in `./example/docker_compose.yml`). 
 
