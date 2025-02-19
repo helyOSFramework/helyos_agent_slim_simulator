@@ -1,49 +1,40 @@
 version: '3.5'
 services:
 
-
-# # ============================================================================
-# # ============================================================================
-    # #                         HELYOS AGENT 
-# # ============================================================================
-# # ============================================================================
-
-
     agent_simulator:
-        # image: helyosframework/helyos_agent_slim_simulator:0.6.0
+        image: helyosframework/helyos_agent_slim_simulator:0.6.0
         build: ../
         tty: true
         volumes:
-            - ./custom-geometry.json:/app/customization/geometry.json       # To modify reported geometry.
-            - ./ca_certificate.pem:/app/ca_certificate.pem                  # To verify rbmq server url.
+            - ./custom-geometry.json:/app/customization/geometry.json       # To modify reported geometry
+            - ./ca_certificate.pem:/app/ca_certificate.pem                  # To verify rbmq server url
+            # - ../src:/app                                                 # Uncomment to mount the source code into the container for developing
 
         environment:
-            # docker compose is automatically loading the .env file in the same folder
-            # check the .env file for configuration of the agent simulator including variable list, defaults and comments
+            # Load environment from .env file
 
-            # from .env by ${<name>}...
             # GENERAL VARIABLES
-            - UUID=${UUID}                              #
-            - PATH_TRACKER=${PATH_TRACKER}              #
-            - ASSIGNMENT_FORMAT=${ASSIGNMENT_FORMAT}    #
-            - NAME=${NAME}                              #
+            - UUID=${UUID}
+            - PATH_TRACKER=${PATH_TRACKER}
+            - ASSIGNMENT_FORMAT=${ASSIGNMENT_FORMAT} 
+            - NAME=${NAME}
             - X0=${X0}
             - Y0=${Y0}
-            - ORIENTATION=${ORIENTATION}                #
-            - VELOCITY=${VELOCITY}                      #
-            - VEHICLE_PARTS=${VEHICLE_PARTS}            #
-            - YARD_UID=${YARD_UID}                      #
-            - UPDATE_RATE=${UPDATE_RATE}                #
-            - CACERTIFICATE_FILENAME='ca_certificate.pem' # in docker the certificate is on the mounted volume
+            - ORIENTATION=${ORIENTATION}
+            - VELOCITY=${VELOCITY}
+            - VEHICLE_PARTS=${VEHICLE_PARTS}
+            - YARD_UID=${YARD_UID}
+            - UPDATE_RATE=${UPDATE_RATE}
+            - CACERTIFICATE_FILENAME=${CACERTIFICATE_FILENAME}
 
             # RABBITMQ ENDPOINT SPEC
-            - RBMQ_HOST=${RBMQ_HOST}                    #
-            - RBMQ_VHOST=${RBMQ_VHOST}                  #
+            - RBMQ_HOST=${RBMQ_HOST}
+            - RBMQ_VHOST=${RBMQ_VHOST}
+            - RBMQ_PORT=${RBMQ_PORT}
 
             # RABBITMQ PROTOCOL SPEC
-            - RBMQ_PORT=${RBMQ_PORT}                    #
-            - ENABLE_SSL=${ENABLE_SSL}                  #
-            - PROTOCOL=${PROTOCOL}                      # AMQP | MQTT
+            - ENABLE_SSL=${ENABLE_SSL}
+            - PROTOCOL=${PROTOCOL}
 
             # RBMQ ACCOUNT
             # - RBMQ_USERNAME=${RBMQ_USERNAME}
@@ -51,16 +42,10 @@ services:
             # OR
             - REGISTRATION_TOKEN=${REGISTRATION_TOKEN}
 
-    # check RBMQ_HOST in .env to match the network confiuration
-    # execution of docker on host machine
-    #    network_mode: "host"                        # RBMQ_HOST=localhost
-
-    # execution of docker as part of an existing backend network:
         networks:
-            - my-docker-net                         # change to your own network name
+            - control-tower-net
 
 networks:
-    my-docker-net:
-        name: my-docker-net
+    control-tower-net:
+        name: control-tower-net
         external: true
-
