@@ -37,7 +37,8 @@ For development purposes, the source code can be mounted into the container
 volumes:
    - ../src:/app 
 ```
-Now, when running `docker compose up`, changes in the `src` directory will reflect immediately in the container. Alternatively, build an link a new docker image. 
+Now, when running `docker compose up`, changes in the `src` directory will reflect immediately in the container. Alternatively, build a new docker image and link it in the `docker-compose.yml`. 
+
 
 ## Building a Docker Image
 
@@ -116,7 +117,7 @@ The simulator is configured by the following environment variables:
 | ORIENTATION | Initial orientation in mrads |
 | VELOCITY | Driving velocity 0 to 10. (arb. unit) |
 | --- | --- |
-| RBMQ_HOST | Adress of the HelyOS RabbitMQ Server (e.g  rabbitmq.server.com, localhost, default: local_message_broker, see details below)  |
+| RBMQ_HOST | Adress of the HelyOS RabbitMQ Server (e.g  rabbitmq.server.com, localhost, default: local_message_broker, see [RabbitMQ Server Connection](#rabbitmq-server-connection))  |
 | RBMQ_VHOST | Virtual host of RabbitMQ   |
 | RBMQ_PORT | HelyOS RabbitMQ Port (e.g.,5671, 5672, 1883, 8883, default:5672)  |
 | RBMQ_USERNAME | Agent RabbitMQ account name |
@@ -141,11 +142,16 @@ Ref:
     - [Stanley: The robot that won the DARPA grand challenge](http://isl.ecst.csuchico.edu/DOCS/darpa2005/DARPA%202005%20Stanley.pdf)
     - [Autonomous Automobile Path Tracking](https://www.ri.cmu.edu/pub_files/2009/2/Automatic_Steering_Methods_for_Autonomous_Automobile_Path_Tracking.pdf)
 
-### Connection to RabbitMQ Server
+## RabbitMQ Server Connection
 
-The `RBMQ_HOST` is the server adress of the RabbitMQ Server used by the helyOS control tower. The default value local_message_broker is intended for the scenario where the RabbitMQ server runs in a docker service called local_message_broker. In this setup, the agent simulator is intended to run in a docker service within the same network as the local_message_broker service (see the network settings in `./example/docker_compose.yml`). 
+The `RBMQ_HOST` variable specifies the RabbitMQ server address for the helyOS control tower. Below are example configurations for different deployment scenarios:
 
-An alternative scenario could be to run the agent simulator natively, and connect to a locally running RabbitMQ server by setting `RBMQ_HOST` to localhost. 
+- **Docker Deployment**:  
+  For a RabbitMQ server running as a Docker service named `local_message_broker`, set `RBMQ_HOST` to `local_message_broker`. In this scenario, ensure that the agent simulator operates within the same Docker network as the RabbitMQ broker (refer to `./example/docker_compose.yml` for network configuration details).
+
+- **Local Development**:  
+  If you choose to run the agent simulator natively on your machine and you run a locally hosted RabbitMQ server, set `RBMQ_HOST` to `localhost`.
+
 
 ### License
 
