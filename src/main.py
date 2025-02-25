@@ -1,4 +1,5 @@
 import os, json, time
+from dotenv import load_dotenv
 from threading import Thread
 from data_publishing import periodic_publish_state_and_sensors
 from helyos_agent_sdk import HelyOSClient, HelyOSMQTTClient, AgentConnector, DatabaseConnector
@@ -14,7 +15,13 @@ from helyos_agent_sdk.crypto import verify_signature
 from helyos_agent_sdk.utils import replicate_helyos_client
 
 
-# CONSTANTS
+# Load and set environment variables from a local .env file if it exists.
+# This process will not overwrite any environment variables that are already set.
+dotenv_path = '.env'
+if load_dotenv(dotenv_path):
+    print("loaded environment from .env file.")
+
+# Agent configuration
 ALT_RABBITMQ_HOST = os.environ.get('RABBITMQ_HOST', "local_message_broker")
 RABBITMQ_HOST = os.environ.get('RBMQ_HOST', ALT_RABBITMQ_HOST)
 ALT_RABBITMQ_PORT = int(os.environ.get('RABBITMQ_PORT', "5672"))
@@ -23,7 +30,7 @@ ENABLE_SSL = os.environ.get('ENABLE_SSL', "False") == "True"
 PROTOCOL = os.environ.get('PROTOCOL', "AMQP")
 CACERTIFICATE_FILENAME = os.environ.get('CACERTIFICATE_FILENAME', "ca_certificate.pem")
 
-VEHICLE_NAME = os.environ.get('NAME', '')
+VEHICLE_NAME = os.environ.get('NAME', 'SlimAgentSimulator')
 AGENT_TYPE = os.environ.get('AGENT_TYPE', "truck")
 
 ASSIGNMENT_FORMAT = os.environ.get('ASSIGNMENT_FORMAT', "trajectory")
@@ -96,6 +103,7 @@ current_assignment_ros = MockROSCommunication("current_assignment_ros")
 driving_operation_ros.publish({'CANCEL_DRIVING':False, 'destination':None, 'path_array':None})
 current_assignment_ros.publish({'id':None, 'status': None})
 
+# Checkin to helyos and initialize agent
 helyOS_client, agentConnector = agent_initialization(   rabbitmq_config,
                                                         agent_data,
                                                         UUID, YARD_UID,

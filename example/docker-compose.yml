@@ -1,66 +1,51 @@
 version: '3.5'
 services:
 
-
-# # ============================================================================
-# # ============================================================================
-    # #                         HELYOS AGENT 
-# # ============================================================================
-# # ============================================================================
-
-
     agent_simulator:
-        # image: helyosframework/helyos_agent_slim_simulator:0.6.0
+        image: helyosframework/helyos_agent_slim_simulator:0.6.0
         build: ../
-
+        tty: true
         volumes:
-            - ./custom-geometry.json:/app/customization/geometry.json        # To modify reported geometry.
-            - ./ca_certificate.pem:/app/ca_certificate.pem # To verify rbmq server url.
+            - ./custom-geometry.json:/app/customization/geometry.json       # To modify reported geometry
+            - ./ca_certificate.pem:/app/ca_certificate.pem                  # To verify rbmq server url
+            # - ../src:/app                                                 # Uncomment to mount the source code into the container for developing
+
         environment:
+            # Load environment from .env file
 
-            # AGENT ID
-            - UUID=Bb3402-9fc5-fdgs-434b-b87e-f19c5435113 
-            - PATH_TRACKER=ideal  # ideal | straight_to_destination | stanley (defaults to ideal)
-            - ASSIGNMENT_FORMAT=autotruck-path  # fixed | trajectory | destination | autotruck-path 
-            - NAME='TSLIM-SIM'
-            - X0=0
-            - Y0=-40000
-            - ORIENTATION=0
-            - VELOCITY=1.8 
-            - VEHICLE_PARTS=2
-            - YARD_UID=1
-            - UPDATE_RATE=20 #Hz
+            # GENERAL VARIABLES
+            - UUID=${UUID}
+            - PATH_TRACKER=${PATH_TRACKER}
+            - ASSIGNMENT_FORMAT=${ASSIGNMENT_FORMAT} 
+            - NAME=${NAME}
+            - X0=${X0}
+            - Y0=${Y0}
+            - ORIENTATION=${ORIENTATION}
+            - VELOCITY=${VELOCITY}
+            - VEHICLE_PARTS=${VEHICLE_PARTS}
+            - YARD_UID=${YARD_UID}
+            - UPDATE_RATE=${UPDATE_RATE}
+            - CACERTIFICATE_FILENAME=${CACERTIFICATE_FILENAME}
 
-            # RABBITMQ 
-            - RBMQ_HOST=local_message_broker # local_message_broker | rabbitmq.server.com 
-            - RBMQ_VHOST=/
+            # RABBITMQ ENDPOINT SPEC
+            - RBMQ_HOST=${RBMQ_HOST}
+            - RBMQ_VHOST=${RBMQ_VHOST}
+            - RBMQ_PORT=${RBMQ_PORT}
 
-            # FOR MQTT AGENT
-            # - RBMQ_PORT=8883
-            # - ENABLE_SSL=True # True | False (defaults to False)
-            # - PROTOCOL=MQTT # AMQP | MQTT (defaults to AMQP)
-            
-            # FOR AMQP AGENT (DEFAULT)
-            - RBMQ_PORT=5672  # 5671 | 5672 | 8883 (defaults to 5672)
-            - ENABLE_SSL=False # True | False (defaults to False)
-            - PROTOCOL=AMQP # AMQP | MQTT (defaults to AMQP) Remember to change the port for MQTT
+            # RABBITMQ PROTOCOL SPEC
+            - ENABLE_SSL=${ENABLE_SSL}
+            - PROTOCOL=${PROTOCOL}
 
             # RBMQ ACCOUNT
-            # - RBMQ_USERNAME=Bb3402-9fc5-fdgs-434b-b87e-f19c5435113
-            # - RBMQ_PASSWORD=pass123
+            # - RBMQ_USERNAME=${RBMQ_USERNAME}
+            # - RBMQ_PASSWORD=${RBMQ_PASSWORD}
             # OR
-            - REGISTRATION_TOKEN=0001-0002-0003-0000-0004
+            - REGISTRATION_TOKEN=${REGISTRATION_TOKEN}
 
         networks:
             - control-tower-net
-               
-
-
 
 networks:
     control-tower-net:
         name: control-tower-net
         external: true
-
-
-

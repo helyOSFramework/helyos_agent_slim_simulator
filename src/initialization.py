@@ -28,24 +28,12 @@ def agent_initialization (  rabbitmq_config,
                                         uuid=UUID, enable_ssl= rabbitmq_config['enable_ssl'],
                                         ca_certificate=rabbitmq_config['ca_certificate'],
                                         vhost=rabbitmq_config['vhost'])
-    attempts = 0; helyos_excep = None
-    while attempts < CHECKIN_MAX_ATTEMPTS:
-        try:
-            if rabbitmq_config['username'] and rabbitmq_config['password']:
-                helyOS_client.connect(rabbitmq_config['username'], rabbitmq_config['password'])
-
-            print(f"Check in, attempt {attempts+1} ...")
-            helyOS_client.perform_checkin(yard_uid=YARD_UID, agent_data=agent_data, status=initial_status.value)
-            break
-        except Exception as e:
-            attempts += 1
-            helyos_excep = e
-            time.sleep(2)
-    if attempts == CHECKIN_MAX_ATTEMPTS:
-        raise helyos_excep
+    
+    if not perform_checkin(helyOS_client, rabbitmq_config, YARD_UID, agent_data, initial_status, CHECKIN_MAX_ATTEMPTS):
+        exit()
 
     helyOS_client.get_checkin_result()
-    print("\n connected to message broker")       
+    print("\n connected to message broker")        
     
 
     ## 1.2 Instantiate main Agent Connector  
@@ -57,3 +45,23 @@ def agent_initialization (  rabbitmq_config,
 
 
     return helyOS_client, agent_connector
+
+def connect_to_rabbitmq(helyOS_client, rabbitmq_config):
+    if rabbitmq_config.get('username') and rabbitmq_config.get('password'):
+        helyOS_client.connect(rabbitmq_config['username'], rabbitmq_config['password'])
+
+def perform_checkin(helyOS_client, rabbitmq_config, yard_uid, agent_data, initial_status, max_attempts) -> bool:
+    for attempt in range(1, max_attempts + 1):
+        print(f"Check in, attempt {attempt} ...")
+        
+        try:
+            connect_to_rabbitmq(helyOS_client, rabbitmq_config)
+            helyOS_client.perform_checkin(yard_uid=yard_uid, agent_data=agent_data, status=initial_status.value)
+            return True
+        
+        except Exception as e:
+            print(e)
+            time.sleep(2)
+   
+    print(f"Check in failed after {max_attempts} attempts. Please check your credentials, network configuration and network connectivity.")
+    
